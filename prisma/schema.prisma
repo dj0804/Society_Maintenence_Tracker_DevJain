@@ -1,0 +1,125 @@
+// Society Maintenance Tracker - database schema
+//
+// Design notes:
+//  * ComplaintStatusHistory is append-only. It is the audit trail for a
+//    complaint's lifecycle: every transition (including creation) writes one
+//    row recording who changed it, when, from/to, and an optional note.
+//  * "Overdue" is NOT stored as derived state. It is computed from
+//    createdAt + the configurable threshold in Setting, so changing the
+//    threshold instantly re-evaluates every open complaint. The stored
+//    isOverdueFlagged boolean only records a *manual* admin flag.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  RESIDENT
+  ADMIN
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Category {
+  PLUMBING
+  ELECTRICAL
+  LIFT
+  HOUSEKEEPING
+  SECURITY
+  PARKING
+  WATER
+  COMMON_AREA
+  OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(RESIDENT)
+  flatNumber   String
+  phone        String?
+  createdAt    DateTime @default(now())
+
+  complaints    Complaint[]             @relation("ResidentComplaints")
+  statusChanges ComplaintStatusHistory[] @relation("ChangedBy")
+  notices       Notice[]                @relation("PostedBy")
+
+  @@index([role])
+}
+
+model Complaint {
+  id          String          @id @default(cuid())
+  ticketNo    String          @unique
+  residentId  String
+  resident    User            @relation("ResidentComplaints", fields: [residentId], references: [id], onDelete: Cascade)
+  category    Category
+  title       String
+  description String
+  status      ComplaintStatus @default(OPEN)
+  priority    Priority        @default(MEDIUM)
+  photoUrl    String?
+
+  // Manual admin override. Derived overdue detection lives in lib/overdue.ts.
+  isOverdueFlagged Boolean @default(false)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
+
+  history ComplaintStatusHistory[]
+
+  @@index([residentId])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@index([status, createdAt])
+}
+
+model ComplaintStatusHistory {
+  id          String           @id @default(cuid())
+  complaintId String
+  complaint   Complaint        @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  fromStatus  ComplaintStatus? // null for the row written at creation time
+  toStatus    ComplaintStatus
+  note        String?
+  changedById String
+  changedBy   User             @relation("ChangedBy", fields: [changedById], references: [id])
+  createdAt   DateTime         @default(now())
+
+  @@index([complaintId, createdAt])
+}
+
+model Notice {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  isImportant Boolean  @default(false)
+  postedById  String
+  postedBy    User     @relation("PostedBy", fields: [postedById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([isImportant, createdAt])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

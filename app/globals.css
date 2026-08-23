@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens. Everything in the UI is built from this small palette so the
+   app reads as one system.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-surface: #ffffff;
+  --color-canvas: #f6f7f9;
+
+  --color-brand: #1d4ed8;
+  --color-brand-soft: #eff4ff;
+
+  --color-open: #b45309;
+  --color-open-soft: #fef3c7;
+  --color-progress: #1d4ed8;
+  --color-progress-soft: #dbeafe;
+  --color-resolved: #15803d;
+  --color-resolved-soft: #dcfce7;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+}
+
+html {
+  background: var(--color-canvas);
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------------------
+   Shared building blocks, so pages stay declarative.
+   Tailwind v4 cannot @apply one custom class inside another, so the button
+   variants repeat the shared base utilities rather than extending `.btn`.
+--------------------------------------------------------------------------- */
+@utility card {
+  @apply rounded-xl border border-line bg-surface;
+}
+
+@utility label {
+  @apply block text-sm font-medium text-ink mb-1.5;
+}
+
+@utility input {
+  @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink
+         outline-none transition placeholder:text-muted
+         focus:border-brand focus:ring-2 focus:ring-brand/15;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+         transition disabled:cursor-not-allowed disabled:opacity-55;
+}
+
+@utility btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+         transition disabled:cursor-not-allowed disabled:opacity-55
+         bg-ink text-white hover:bg-ink/90;
+}
+
+@utility btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+         transition disabled:cursor-not-allowed disabled:opacity-55
+         border border-line bg-surface text-ink hover:bg-canvas;
+}
+
+@utility btn-danger {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+         transition disabled:cursor-not-allowed disabled:opacity-55
+         border border-danger/25 bg-danger-soft text-danger hover:bg-danger/15;
+}
+
+@utility badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap;
+}
+
+@utility field-error {
+  @apply mt-1.5 text-xs text-danger;
+}

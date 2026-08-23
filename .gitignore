@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# builds
+.next/
+out/
+dist/
+build/
+
+# environment / secrets
+.env
+.env.local
+.env*.local
+
+# editor / os
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# runtime
+*.log
+npm-debug.log*
+next-env.d.ts
+*.tsbuildinfo
+
+# locally uploaded complaint photos (dev fallback only)
+.uploads/
