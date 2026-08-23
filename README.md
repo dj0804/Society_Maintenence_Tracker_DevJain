@@ -4,6 +4,19 @@ A complaint-management platform for apartment societies. Residents raise mainten
 complaints with photos and follow every status change; the admin triages them by priority,
 sees what has gone overdue, posts notices, and residents are emailed as things move.
 
+**Live application:** <https://society-maintenance-tracker-alpha.vercel.app>
+
+Sign in with `admin@society.com` / `Admin@123` for the admin view, or
+`rhea@example.com` / `Resident@123` for a resident. The database is seeded with 12
+complaints across every status and category — several deliberately backdated, so overdue
+detection and the dashboard have real data on first load.
+
+> **A note on email.** The hosted deployment runs without a `RESEND_API_KEY`, so
+> notifications are written to the Vercel function logs rather than sent. This is a
+> deliberate fallback in `lib/email.ts`, not a missing feature: set the key and the same
+> code path sends through Resend. Photo uploads on the hosted app *are* live, going to
+> Vercel Blob.
+
 ---
 
 ## Contents
@@ -423,7 +436,8 @@ send is logged to the console instead.
 
 ## Deployment
 
-Deployed on Vercel with a Neon Postgres database.
+Deployed on Vercel with a Neon Postgres database, provisioned through the Vercel
+Marketplace so `DATABASE_URL` and `DATABASE_URL_UNPOOLED` are injected automatically.
 
 1. Push the repository to GitHub and import it into Vercel.
 2. Create a Postgres database (Neon, Supabase, or Vercel Postgres) and copy its
