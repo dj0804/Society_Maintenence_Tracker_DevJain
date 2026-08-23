@@ -121,19 +121,21 @@ Then set `DATABASE_URL="postgresql://postgres:postgres@localhost:5433/society_tr
 
 ## Environment variables
 
-| Variable                 | Required | Purpose                                                                 |
-| ------------------------ | -------- | ----------------------------------------------------------------------- |
-| `DATABASE_URL`           | Yes      | PostgreSQL connection string                                             |
-| `JWT_SECRET`             | Yes      | Secret used to sign session tokens                                       |
-| `NEXT_PUBLIC_APP_URL`    | Yes      | Public base URL, used to build links inside emails                       |
+| Variable                 | Required | Purpose                                                                   |
+| ------------------------ | -------- | ------------------------------------------------------------------------- |
+| `DATABASE_URL`           | Yes      | PostgreSQL connection string (the **pooled** one on Neon)                 |
+| `DATABASE_URL_UNPOOLED`  | Yes      | Direct connection, used only for migrations. Same value on plain Postgres |
+| `JWT_SECRET`             | Yes      | Secret used to sign session tokens                                        |
+| `APP_URL`                | No       | Base URL used to build links inside emails. Defaults to `localhost:3000`  |
 | `RESEND_API_KEY`         | No       | Resend API key. Omit and emails are logged to the console instead of sent |
-| `MAIL_FROM`              | No       | From address for outgoing email                                          |
+| `MAIL_FROM`              | No       | From address for outgoing email                                           |
 | `BLOB_READ_WRITE_TOKEN`  | No       | Vercel Blob token. Omit and photos are written to `.uploads/` locally     |
-| `SEED_ADMIN_EMAIL`       | No       | Admin email created by the seed script (default `admin@society.com`)     |
-| `SEED_ADMIN_PASSWORD`    | No       | Admin password created by the seed script (default `Admin@123`)          |
+| `SEED_ADMIN_EMAIL`       | No       | Admin email created by the seed script (default `admin@society.com`)      |
+| `SEED_ADMIN_PASSWORD`    | No       | Admin password created by the seed script (default `Admin@123`)           |
 
-The app runs end to end with only the three required variables set — email and photo
-storage both degrade gracefully so no third-party account is needed to evaluate it.
+The app runs end to end with only the database and `JWT_SECRET` configured — email and
+photo storage both degrade gracefully, so no third-party account is needed to evaluate it.
+`APP_URL` is read server-side only, when composing email links.
 
 ---
 

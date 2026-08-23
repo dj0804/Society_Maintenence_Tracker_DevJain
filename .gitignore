@@ -9,10 +9,12 @@ out/
 dist/
 build/
 
-# environment / secrets
+# environment / secrets (.env.example is committed on purpose)
 .env
 .env.local
 .env*.local
+.env.production.local
+!.env.example
 
 # editor / os
 .vscode/
@@ -28,3 +30,6 @@ next-env.d.ts
 
 # locally uploaded complaint photos (dev fallback only)
 .uploads/
+
+# vercel cli
+.vercel/

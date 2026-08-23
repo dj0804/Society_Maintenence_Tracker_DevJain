@@ -5,7 +5,7 @@ type Mail = { to: string | string[]; subject: string; html: string };
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export function appUrl(pathname = "/"): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
+  const base = process.env.APP_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
   return `${base}${pathname}`;
 }
 
